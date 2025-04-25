@@ -1,0 +1,38 @@
+---
+/* index.astro
+ * Pagina principal. Muestra peliculas por genero
+ */
+import Layout from "../components/layout/Layout.astro";
+import NavBar from "../components/layout/NavBar.astro";
+import Footer from "../components/layout/Footer.astro";
+import CategorySection from "../components/category/CategorySection.astro";
+import "../styles/global.css";
+
+import { getPostsByCategorySlug } from "../lib/wp/api.ts";
+import { CATEGORIES } from "../lib/wp";
+
+const POSTS_PER_CAT = 4; //Cantidad de posts que se mostraran por categoria
+//Obtener loss posts por categoria
+const postsByCategory = await Promise.all(
+  Object.values(CATEGORIES).map(async (category) => ({
+    category,
+    posts: await getPostsByCategorySlug(category, POSTS_PER_CAT),
+  }))
+);
+
+---
+<Layout>
+  <main class="min-h-screen bg-gradient-to-b from-[#213448] via-[#547792] to-[#94B4C1] text-[#ECEFCA] py-12 px-4 md:px-8 space-y-8">
+
+    <NavBar />
+
+    {postsByCategory.map(({ category, posts }) => (
+      <CategorySection 
+        categoria={category.toLowerCase()}
+        posts={posts}
+      />
+    ))}
+
+  </main>
+  <Footer />
+</Layout>

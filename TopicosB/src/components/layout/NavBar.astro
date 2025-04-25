@@ -1,0 +1,58 @@
+---
+import { CATEGORIES } from "../../lib/wp/constants";
+import { getPageInfo } from "../../lib/wp/api.ts";
+
+const currentPath = Astro.url.pathname;
+const { title } = await getPageInfo("cinemax");
+---
+
+<!-- Bloque del título -->
+<section class="bg-[#547792] rounded-2xl shadow-md p-6 text-center mt-0">
+  <h1 class="text-4xl font-extrabold text-[#ECEFCA]">{title}</h1>
+</section>
+
+<!-- Barra de navegación (NavBar) -->
+<nav class="bg-[#213448] text-[#ECEFCA] shadow-md mt-0">
+  <div class="max-w-6xl mx-auto px-4">
+    <div class="flex items-left h-16">
+      <!-- Menú alineado a la izquierda -->
+      <div class="flex items-center space-x-8">
+        <!-- Inicio -->
+        <a 
+          href="/" 
+          class={`hover:text-[#94B4C1] transition ${currentPath === "/" ? "text-[#ECEFCA] font-bold" : ""}`}
+        >
+          Inicio
+        </a>
+
+        <!-- Generos -->
+        <div class="relative group">
+          <button class="hover:text-[#94B4C1] transition focus:outline-none">
+            Géneros
+          </button>
+          <div class="absolute hidden group-hover:block bg-[#547792] text-[#ECEFCA] mt-2 rounded shadow-lg z-50">
+            <ul class="min-w-[160px]">
+              {Object.entries(CATEGORIES).map(([key, slug]) => (
+                <li>
+                  <a 
+                    href={`/genre/${slug}`}
+                    class="block px-4 py-2 hover:bg-[#94B4C1]/20 transition"
+                  >
+                    {key.charAt(0).toUpperCase() + key.slice(1).toLowerCase()}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+
+        <a 
+          href="/ranking" 
+          class={`hover:text-[#94B4C1] transition ${currentPath === "/ranking" ? "text-[#ECEFCA] font-bold" : ""}`}
+        >
+          Ranking
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>

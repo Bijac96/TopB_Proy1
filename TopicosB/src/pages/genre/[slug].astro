@@ -1,0 +1,65 @@
+---
+/* genre/[slug].astro
+ * Pagina que muestra las peliculas por genero.
+ * Se usa un estilo unico para cada genero
+ */
+
+import Layout from "../../components/layout/Layout.astro";
+import NavBar from "../../components/layout/NavBar.astro";
+import Footer from "../../components/layout/Footer.astro";
+import FilmCard from "../../components/movie/FilmCard.astro";
+import { getPostsByCategorySlug } from "../../lib/wp";
+import { CATEGORIES } from "../../lib/wp/constants";
+
+//Obtener los slugs de los generos
+export async function getStaticPaths() {
+  return Object.keys(CATEGORIES).map((key) => ({
+    params: { slug: key.toLowerCase() },
+  }));
+}
+
+//Obtener las peliculas de un genero
+const { slug } = Astro.params;
+const posts = await getPostsByCategorySlug(CATEGORIES[slug.toUpperCase()] || "", 100);
+
+//Estilo en cada genero
+const styles = {
+  terror: {
+    section: "bg-[#1a1a1a] text-red-100",
+    title: "text-4xl font-extrabold text-red-600 border-b border-red-700 pb-2 mb-6",
+  },
+  comedia: {
+    section: "bg-yellow-100 text-[#213448]",
+    title: "text-4xl font-extrabold text-yellow-700 border-b border-yellow-600 pb-2 mb-6",
+  },
+  drama: {
+    section: "bg-[#ECEFCA] text-[#213448]",
+    title: "text-4xl font-extrabold text-[#547792] border-b border-[#213448] pb-2 mb-6",
+  },
+  thriller: {
+    section: "bg-[#213448] text-[#ECEFCA]",
+    title: "text-4xl font-extrabold text-[#94B4C1] border-b border-[#547792] pb-2 mb-6",
+  },
+};
+
+// Se usa el estilo del genero actual
+const genreStyle = styles[slug] || styles.drama;
+const genreName = slug.charAt(0).toUpperCase() + slug.slice(1);
+---
+
+<Layout>
+
+  <main class={`min-h-screen py-12 px-4 md:px-8 space-y-12 ${genreStyle.section}`}>
+    <NavBar />
+
+    <h1 class={`${genreStyle.title} text-center`} style="font-family: 'Playfair Display', serif;">
+      Películas de {genreName}
+    </h1>
+
+    <div class="grid md:grid-cols-3 gap-6">
+      {posts.map(post => <FilmCard {...post} />)}
+    </div>
+  </main>
+  
+  <Footer />
+</Layout>

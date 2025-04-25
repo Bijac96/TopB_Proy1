@@ -1,0 +1,87 @@
+---
+/* post/[slug].astro
+ * Pagina para mostrar los detalles de cada pelicula
+ */
+
+import Layout from "../../components/layout/Layout.astro";
+import NavBar from "../../components/layout/NavBar.astro";
+import Footer from "../../components/layout/Footer.astro";
+import { getPostBySlug, getAllPostSlugs } from "../../lib/wp";
+import sanitizeHtml from 'sanitize-html';
+import "../../styles/global.css";
+
+//Funcion para obtener los slugs de las peliculas
+export async function getStaticPaths() {
+  const slugs = await getAllPostSlugs();
+  return slugs.map((slug: string) => ({
+    params: { slug },
+  }));
+}
+
+
+//Obtener los datos de la pelicula a partir del slug
+const { slug } = Astro.params;
+const post = await getPostBySlug(slug);
+
+if (!post) {
+  throw new Error(`Post not found for slug: ${slug}`);
+}
+
+// Extraer solo el tráiler (iframe) del contenido
+const trailerMatch = post.content.rendered.match(/<iframe.*?<\/iframe>/);
+const trailer = trailerMatch ? trailerMatch[0] : null;
+
+// Eliminar el iframe del contenido
+const contentWithoutTrailer = post.content.rendered.replace(trailer, '');
+
+// Se quitar trailers y figuras con imagenes duplicadas
+const cleanedContent = sanitizeHtml(contentWithoutTrailer, {
+  allowedTags: sanitizeHtml.defaults.allowedTags.concat(['iframe']),
+  allowedAttributes: {
+    iframe: ['src', 'width', 'height', 'allow', 'allowfullscreen', 'frameborder', 'loading', 'referrerpolicy', 'title'],
+    '*': ['style', 'class'],
+  },
+});
+
+---
+<Layout>
+    <main class="min-h-screen bg-gradient-to-b from-[#213448] via-[#547792] to-[#94B4C1] text-[#ECEFCA] py-12 px-4 md:px-8 space-y-8">
+        <NavBar />
+        
+        <section class="bg-[#213448] rounded-2xl shadow-lg p-6 mb-10">
+          <h1 class="text-3xl md:text-4xl font-bold text-left">{post.title.rendered}</h1>
+        </section>
+
+        <section class="bg-[#547792] rounded-2xl shadow-lg p-6">
+          <div class="flex flex-col md:flex-row md:items-start md:space-x-6 space-y-6 md:space-y-0">
+    
+            <!-- Imagen destacada -->
+            <div class="md:w-1/2 flex justify-center">
+              <img
+                src={post.featuredImage}
+                alt="Imagen destacada de la película"
+                class="rounded-xl shadow-md w-full max-w-md h-auto max-h-[650px] object-cover"
+                id="poster-img"
+              />
+            </div>
+    
+            <div class="md:w-1/2 max-w-xl flex flex-col justify-between" style="max-height: 650px;">
+              <!-- Sinopsis -->
+              <div class="prose prose-invert text-[#ECEFCA] max-h-[60%] overflow-auto mb-4 font-poppins" style="font-size: 1.0rem;">
+                <div set:html={cleanedContent} />
+              </div>
+    
+              <!-- Trailer -->
+              {trailer && (
+                <div class="w-full aspect-video max-h-[40%]">
+                  <div class="w-full h-full" set:html={trailer} />
+                </div>
+              )}
+            </div>
+    
+          </div>
+        </section>
+    
+      </main>
+    <Footer />
+  </Layout>

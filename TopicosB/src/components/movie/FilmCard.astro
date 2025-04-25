@@ -1,0 +1,19 @@
+---
+/* 
+ * Muestra una tarjeta con la imagen, titulo y sinopsis (resumida)
+ * de una pelicula
+ */
+const { title, excerpt, featuredImage, slug } = Astro.props;
+---
+
+<article class="bg-[#547792] text-[#ECEFCA] rounded-2xl shadow-lg overflow-hidden hover:scale-105 transition-transform">
+  <a href={`/post/${slug}`}>
+    {featuredImage && (
+      <img src={featuredImage} alt={title} class="w-full h-48 object-cover" />
+    )}
+    <div class="p-4">
+      <h3 class="text-lg font-bold mb-2 line-clamp-1" set:html={title}></h3>
+      <div class="text-sm text-[#ECEFCA]/80 line-clamp-3" set:html={excerpt}></div>
+    </div>
+  </a>
+</article>

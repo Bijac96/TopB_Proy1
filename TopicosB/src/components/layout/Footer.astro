@@ -1,0 +1,42 @@
+---
+/* Footer.astro
+ * Footer de la pagina */
+const genres = ["terror", "comedia", "drama", "thriller"];
+---
+
+<footer class="bg-[#213448] text-[#ECEFCA] py-8 mt-12">
+  <div class="max-w-6xl mx-auto px-4 grid md:grid-cols-3 gap-8 text-sm">
+    
+    <div>
+      <h3 class="text-lg font-bold mb-3 text-[#94B4C1]">Sobre CineMax</h3>
+      <p>
+        CineMax es una página para aquellos que aman el cine. Descubre películas por género y conoce los títulos mejor valorados.
+      </p>
+    </div>
+
+    <!-- Enlaces -->
+    <div>
+      <h3 class="text-lg font-bold mb-3 text-[#94B4C1]">Enlaces de interés</h3>
+      <ul class="space-y-2">
+        <li><a href="/" class="hover:text-[#94B4C1] transition">Inicio</a></li>
+        <li><a href="/ranking" class="hover:text-[#94B4C1] transition">Ranking</a></li>
+        {genres.map(g => (
+          <li>
+            <a href={`/genre/${g}`} class="hover:text-[#94B4C1] transition">
+              {g.charAt(0).toUpperCase() + g.slice(1)}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+
+    <!-- Contacto -->
+    <div>
+      <h3 class="text-lg font-bold mb-3 text-[#94B4C1]">Contacto</h3>
+      <p class="mt-2">Escríbenos a:</p>
+      <p class="font-semibold">contacto@cinemax.cl</p>
+      <p class="mt-4 text-xs text-[#ECEFCA]/60">© 2025 CineMax. Todos los derechos reservados.</p>
+    </div>
+
+  </div>
+</footer>

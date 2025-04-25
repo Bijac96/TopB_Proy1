@@ -1,0 +1,46 @@
+---
+/* CategorySection.astro
+ * Muestra una cantidad de peliculas de cada categoria 
+ */
+import FilmCard from "../movie/FilmCard.astro";
+
+const { categoria, posts } = Astro.props;
+
+const stylesByCategory = {
+  terror: {
+    section: "bg-[#1a1a1a] text-[#ECEFCA]",
+    title: "text-red-600 border-red-700",
+  },
+  comedia: {
+    section: "bg-yellow-100 text-[#213448]",
+    title: "text-yellow-700 border-yellow-600",
+  },
+  drama: {
+    section: "bg-[#ECEFCA] text-[#213448]",
+    title: "text-[#547792] border-[#213448]",
+  },
+  thriller: {
+    section: "bg-[#213448] text-[#ECEFCA]",
+    title: "text-[#94B4C1] border-[#547792]",
+  },
+};
+
+const styles = stylesByCategory[categoria] || {
+  section: "bg-[#547792] text-[#ECEFCA]",
+  title: "text-[#ECEFCA] border-[#213448]",
+};
+---
+
+<section class={`${styles.section} rounded-2xl p-6 shadow-lg mb-12`}>
+  <a href={`/genre/${categoria}`}>
+    <h2
+      class={`text-3xl font-extrabold ${styles.title} border-b pb-2 mb-4 hover:underline transition-all duration-200`}
+      style="font-family: 'Playfair Display', serif;"
+    >
+      {categoria.charAt(0).toUpperCase() + categoria.slice(1)}
+    </h2>
+  </a>
+  <div class="grid md:grid-cols-4 gap-6">
+    {posts.map(post => <FilmCard {...post} />)}
+  </div>
+</section>
